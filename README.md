@@ -39,8 +39,8 @@ This project is built with a modern tech stack to ensure performance, scalabilit
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/fruitsfromdahood.git
-   cd fruitsfromdahood
+   git clone https://github.com/tojaceasar-ship-it/Owocki.git
+   cd Owocki
    ```
 
 2. Install dependencies:
@@ -91,7 +91,7 @@ Vercel is used for hosting the frontend and ensuring optimal performance with au
 
 - **Domain Configuration**:
   - In Vercel dashboard, go to `Domains` and add `fruitsfromdahood.pl`.
-  - Update DNS records with your domain provider to point to Vercel’s nameservers as instructed.
+  - Update DNS records with your domain provider to point to Vercel's nameservers as instructed.
 
 - **Performance Optimization**:
   - `vercel.json` is configured with caching headers for assets (1-year cache) and image optimization settings for faster load times.
@@ -105,10 +105,10 @@ Printful handles product fulfillment and shipping for our custom store.
   2. Obtain your Printful API key from the Printful dashboard under `Settings` > `API`.
   3. Add the API key to your `.env` file or Vercel environment variables as `PRINTFUL_API_KEY`.
   4. In Printful dashboard, set up your store products, pricing, and shipping rates.
-  5. Configure webhook URL in Printful (`Settings` > `Webhooks`) to point to your site’s endpoint (e.g., `https://fruitsfromdahood.pl/api/printful-webhook`) for order status updates.
+  5. Configure webhook URL in Printful (`Settings` > `Webhooks`) to point to your site's endpoint (e.g., `https://fruitsfromdahood.pl/api/printful-webhook`) for order status updates.
 
 - **Testing**:
-  - Use Printful’s sandbox mode for testing orders before going live.
+  - Use Printful's sandbox mode for testing orders before going live.
   - Verify that products sync correctly to your shop page and orders are created in Printful after checkout.
 
 ### 3. Sanity CMS (Content Management)
@@ -145,7 +145,7 @@ Stripe and PayPal are integrated for secure payment processing.
   1. Sign up at [stripe.com](https://stripe.com) and get your API keys from the dashboard (`Developers` > `API keys`).
   2. Add `STRIPE_API_KEY` to your `.env` file or Vercel environment variables.
   3. Configure webhook in Stripe (`Developers` > `Webhooks`) to notify your site of payment events (e.g., `https://fruitsfromdahood.pl/api/stripe-webhook`).
-  4. Test payments using Stripe’s test mode with test card numbers (e.g., 4242 4242 4242 4242).
+  4. Test payments using Stripe's test mode with test card numbers (e.g., 4242 4242 4242 4242).
 
 - **PayPal Setup**:
   1. Sign up at [developer.paypal.com](https://developer.paypal.com) and create a sandbox app to get `PAYPAL_CLIENT_ID` and `PAYPAL_SECRET`.
