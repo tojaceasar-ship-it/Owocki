@@ -1,25 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // This changes the output dir from dist to build
-  // comment this out if that isn't relevant for your project
+  plugins: [react()],
+  root: path.resolve(__dirname),
   build: {
     outDir: 'dist',
-    chunkSizeWarningLimit: 2000,
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, './index.html')
+      },
+      external: ['react-redux']
+    }
   },
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
-  plugins: [tsconfigPaths(), react()],
   server: {
-    port: '4028',
-    host: '0.0.0.0',
-    strictPort: true,
-    allowedHosts: ['.amazonaws.com', '.builtwithrocket.new']
+    port: 5173,
+    open: true
   }
 });

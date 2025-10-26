@@ -12,6 +12,7 @@ import FooterEditor from './components/FooterEditor';
 import GlobalSettings from './components/GlobalSettings';
 import SectionEditor from './components/SectionEditor';
 import WebshopEditor from './components/WebshopEditor';
+import { client } from '../../lib/sanity';
 
 const AdminDashboard = () => {
   const [activeView, setActiveView] = useState('overview');
@@ -21,203 +22,57 @@ const AdminDashboard = () => {
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
   });
 
-  // Mock data for dashboard
-  const [dashboardStats] = useState({
-    activeUsers: "2,847",
-    todaySales: "15,420",
-    newOrders: 127,
-    engagement: 89
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({});
+  const [contentData, setContentData] = useState({ characters: [], communityPosts: [] });
+  const [analyticsData, setAnalyticsData] = useState({});
+  const [users, setUsers] = useState([]);
+  const [systemSettings, setSystemSettings] = useState({});
 
-  const [contentData] = useState({
-    characters: [
-      {
-        id: 1,
-        name: "Watermelon Willie",
-        emoji: "🍉",
-        description: "Główny bohater z czerwoną bluzą i złotym łańcuchem",
-        status: "Aktywny",
-        lastUpdate: "2025-01-20"
-      },
-      {
-        id: 2,
-        name: "Apple Annie",
-        emoji: "🍎",
-        description: "Streetowa artystka z talentem do graffiti",
-        status: "W trakcie edycji",
-        lastUpdate: "2025-01-18"
-      },
-      {
-        id: 3,
-        name: "Banana Bob",
-        emoji: "🍌",
-        description: "DJ i producent muzyczny z dzielnicy",
-        status: "Nowy",
-        lastUpdate: "2025-01-15"
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch stats
+        const statsData = await client.fetch('*[_type == "dashboardStats"]');
+        if (statsData.length > 0) {
+          setStats(statsData[0]);
+        }
+
+        // Fetch content data
+        const contentData = await client.fetch('*[_type == "adminContent"]');
+        if (contentData.length > 0) {
+          setContentData({
+            characters: contentData[0].characters || [],
+            communityPosts: contentData[0].communityPosts || []
+          });
+        }
+
+        // Fetch analytics data
+        const analyticsData = await client.fetch('*[_type == "analyticsData"]');
+        if (analyticsData.length > 0) {
+          setAnalyticsData(analyticsData[0]);
+        }
+
+        // Fetch users data
+        const usersData = await client.fetch('*[_type == "adminUsers"]');
+        if (usersData.length > 0) {
+          setUsers(usersData[0].users || []);
+        }
+
+        // Fetch system settings
+        const settingsData = await client.fetch('*[_type == "systemSettings"]');
+        if (settingsData.length > 0) {
+          setSystemSettings(settingsData[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data from Sanity:', error);
+      } finally {
+        setIsLoading(false);
       }
-    ],
-    communityPosts: [
-      {
-        id: 1,
-        author: "StreetArtist_PL",
-        content: "Nowy mural z Watermelon Willie na Pradze! Kto widział? 🎨",
-        timestamp: "2 godziny temu",
-        status: "approved",
-        likes: 45,
-        comments: 12,
-        shares: 8
-      },
-      {
-        id: 2,
-        author: "HoodStyler",
-        content: "Moja kolekcja Fruits From Da Hood rośnie! Które postaci lubicie najbardziej?",
-        timestamp: "4 godziny temu",
-        status: "pending",
-        likes: 23,
-        comments: 7,
-        shares: 3
-      },
-      {
-        id: 3,
-        author: "CultureVulture",
-        content: "Czy planujecie współpracę z lokalnymi artystami? Mam kilka pomysłów!",
-        timestamp: "6 godzin temu",
-        status: "approved",
-        likes: 67,
-        comments: 19,
-        shares: 15
-      }
-    ]
-  });
-
-  const [analyticsData] = useState({
-    engagement: [
-      { day: 'Pon', users: 1200 },
-      { day: 'Wt', users: 1450 },
-      { day: 'Śr', users: 1680 },
-      { day: 'Czw', users: 1890 },
-      { day: 'Pt', users: 2100 },
-      { day: 'Sob', users: 2400 },
-      { day: 'Nd', users: 2200 }
-    ],
-    sales: [
-      { month: 'Sty', revenue: 12000 },
-      { month: 'Lut', revenue: 15000 },
-      { month: 'Mar', revenue: 18000 },
-      { month: 'Kwi', revenue: 22000 },
-      { month: 'Maj', revenue: 25000 },
-      { month: 'Cze', revenue: 28000 }
-    ],
-    characters: [
-      { name: 'Watermelon Willie', popularity: 35 },
-      { name: 'Apple Annie', popularity: 25 },
-      { name: 'Banana Bob', popularity: 20 },
-      { name: 'Orange Oscar', popularity: 12 },
-      { name: 'Grape Gary', popularity: 8 }
-    ],
-    communityStats: [
-      {
-        label: 'Nowe Posty',
-        description: 'Posts today',
-        value: '47',
-        change: '+12%',
-        icon: 'FileText'
-      },
-      {
-        label: 'Komentarze',
-        description: 'Comments today',
-        value: '156',
-        change: '+8%',
-        icon: 'MessageSquare'
-      },
-      {
-        label: 'Polubienia',
-        description: 'Likes today',
-        value: '892',
-        change: '+15%',
-        icon: 'Heart'
-      },
-      {
-        label: 'Udostępnienia',
-        description: 'Shares today',
-        value: '234',
-        change: '+22%',
-        icon: 'Share2'
-      }
-    ]
-  });
-
-  const [users] = useState([
-    {
-      id: 1,
-      name: "Jakub Nowak",
-      email: "jakub.nowak@example.com",
-      role: "moderator",
-      status: "active",
-      joinDate: "2024-12-15",
-      lastActive: "2 godziny temu",
-      points: 1250,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-      stats: { posts: 23, likes: 145, comments: 67, level: 5 }
-    },
-    {
-      id: 2,
-      name: "Anna Kowalczyk",
-      email: "anna.kowalczyk@example.com",
-      role: "creator",
-      status: "active",
-      joinDate: "2024-11-20",
-      lastActive: "1 dzień temu",
-      points: 2100,
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
-      stats: { posts: 45, likes: 289, comments: 123, level: 7 }
-    },
-    {
-      id: 3,
-      name: "Michał Wiśniewski",
-      email: "michal.wisniewski@example.com",
-      role: "user",
-      status: "inactive",
-      joinDate: "2024-10-05",
-      lastActive: "1 tydzień temu",
-      points: 450,
-      avatar: null,
-      stats: { posts: 8, likes: 34, comments: 12, level: 2 }
-    }
-  ]);
-
-  const [systemSettings] = useState({
-    general: {
-      platformName: "Fruits From Da Hood",
-      tagline: "Rep Your Neighborhood",
-      defaultLanguage: "pl",
-      timezone: "Europe/Warsaw",
-      maintenanceMode: false,
-      publicRegistration: true,
-      contentModeration: true
-    },
-    security: {
-      maxLoginAttempts: 5,
-      lockoutDuration: 15,
-      requireTwoFactor: true,
-      strongPasswords: true,
-      activityLogging: true
-    },
-    notifications: {
-      newRegistrations: true,
-      newPosts: true,
-      reports: true,
-      communityActivity: false,
-      systemUpdates: true,
-      adminEmail: "admin@fruitshood.com"
-    },
-    integrations: {
-      instagram: { connected: true },
-      email: { connected: true },
-      googleAnalytics: "GA-XXXX-XXXX",
-      stripePublicKey: "pk_test_XXXX"
-    }
-  });
+    };
+    fetchDashboardData();
+  }, []);
 
   const handleQuickAction = (actionId) => {
     switch (actionId) {
@@ -262,7 +117,7 @@ const AdminDashboard = () => {
       case 'overview':
         return (
           <>
-            <StatsOverview stats={dashboardStats} />
+            <StatsOverview stats={stats} />
             <QuickActions onActionClick={handleQuickAction} />
             <AnalyticsPanel analyticsData={analyticsData} />
           </>
@@ -303,7 +158,7 @@ const AdminDashboard = () => {
       default:
         return (
           <>
-            <StatsOverview stats={dashboardStats} />
+            <StatsOverview stats={stats} />
             <QuickActions onActionClick={handleQuickAction} />
           </>
         );

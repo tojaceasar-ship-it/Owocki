@@ -1,144 +1,144 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeFromCart, updateQuantity } from '../../services/cartSlice';
 import { paymentService } from '../../services/paymentService';
-import { printfulService } from '../../services/printfulService';
 
-const Cart = ({ cartItems, setCartItems }) => {
-  const [checkoutStatus, setCheckoutStatus] = useState('idle');
+const Cart = () => {
+  const cartItems = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
 
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+  const handleRemoveFromCart = (id) => {
+    dispatch(removeFromCart(id));
   };
 
-  const updateQuantity = (id, quantity) => {
-    setCartItems(cartItems.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-    ));
+  const handleUpdateQuantity = (id, quantity) => {
+    dispatch(updateQuantity({ id, quantity }));
+  };
+
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty. Add items before checking out.');
+      return;
+    }
+
+    try {
+      // Prepare order data for Printful and payment processing
+      const orderData = {
+        recipient: {
+          name: 'Customer Name', // This should be collected from a form in a real implementation
+          address1: 'Customer Address', // This should be collected from a form
+          city: 'Customer City',
+          state_code: 'CA',
+          country_code: 'US',
+          zip: '90210',
+        },
+        items: cartItems.map(item => ({
+          external_id: item.id.toString(),
+          name: item.name,
+          retail_price: item.price,
+          quantity: item.quantity,
+          // Additional Printful-specific fields would be added here
+        })),
+      };
+
+      // Initiate payment process (Stripe/PayPal integration)
+      const paymentResult = await paymentService.initiatePayment({
+        amount: calculateTotal(),
+        currency: 'USD',
+        description: 'Order from Fruits From Da Hood',
+        // In a real implementation, collect customer payment details here
+      });
+
+      if (paymentResult.success) {
+        // If payment is successful, create order in Printful
+        const orderResult = await paymentService.createPrintfulOrder(orderData);
+        if (orderResult.success) {
+          alert('Order placed successfully! Thank you for your purchase.');
+          // Clear cart after successful order
+          cartItems.forEach(item => dispatch(removeFromCart(item.id)));
+        } else {
+          alert('Payment successful, but order creation failed. We will contact you shortly.');
+          console.error('Order creation failed:', orderResult.error);
+        }
+      } else {
+        alert('Payment failed. Please try again.');
+        console.error('Payment failed:', paymentResult.error);
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('An error occurred during checkout. Please try again.');
+    }
   };
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
-  const handleCheckout = async () => {
-    setCheckoutStatus('processing');
-    try {
-      // Przygotowanie danych zamówienia dla Printful
-      const orderData = {
-        recipient: {
-          name: 'Test User',
-          address1: 'Test Address',
-          city: 'Test City',
-          state_code: 'CA',
-          country_code: 'US',
-          zip: '90210'
-        },
-        items: cartItems.map(item => ({
-          id: item.id,
-          quantity: item.quantity
-        }))
-      };
-
-      // Utworzenie zamówienia w Printful
-      const printfulOrder = await printfulService.createOrder(orderData);
-
-      // Przygotowanie danych płatności (przykład dla Stripe)
-      const paymentData = {
-        amount: parseInt(calculateTotal() * 100), // w centach
-        currency: 'usd',
-        source: 'tok_visa' // Token testowy dla Stripe, w produkcji należy użyć prawdziwego tokena
-      };
-
-      // Przetwarzanie płatności przez Stripe
-      const paymentResult = await paymentService.processStripePayment(paymentData);
-
-      if (paymentResult.status === 'succeeded') {
-        setCheckoutStatus('success');
-        setCartItems([]); // Wyczyść koszyk po udanej płatności
-      } else {
-        setCheckoutStatus('error');
-      }
-    } catch (error) {
-      console.error('Error during checkout:', error);
-      setCheckoutStatus('error');
-    }
-  };
-
   if (cartItems.length === 0) {
     return (
-      <div className="bg-black text-white min-h-screen p-5 flex items-center justify-center">
-        <div className="text-center">
-          <Icon name="ShoppingCart" size={48} className="mx-auto text-gray-500" />
-          <p className="mt-2 text-xl">Twój koszyk jest pusty.</p>
-          <Button href="/shop" className="mt-4">Wróć do sklepu</Button>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-3xl font-bold mb-6">Your Cart is Empty</h1>
+        <p className="text-gray-600">Add some fresh streetwear to your cart!</p>
+        <a href="/shop" className="inline-block bg-neon-pink text-white py-2 px-4 rounded-md mt-4 hover:bg-neon-pink-dark transition-colors duration-200">Shop Now</a>
       </div>
     );
   }
 
   return (
-    <div className="bg-black text-white min-h-screen p-5 md:p-10">
-      <motion.h1
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-4xl md:text-6xl font-bold text-center mb-10 neon-glow-primary"
-      >
-        Twój Koszyk
-      </motion.h1>
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 gap-4">
-          {cartItems.map(item => (
-            <div key={item.id} className="bg-gray-900 border border-gray-700 rounded-lg p-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <img src={item.thumbnail} alt={item.name} className="w-20 h-20 object-cover rounded" />
-                <div>
-                  <h3 className="text-xl font-semibold">{item.name}</h3>
-                  <p className="text-lg">Cena: ${item.price}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <input
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                  className="w-16 p-2 bg-gray-800 rounded text-center"
-                  min="1"
-                />
-                <Button
-                  onClick={() => removeFromCart(item.id)}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Usuń
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 p-4 bg-gray-900 border border-gray-700 rounded-lg">
-          <h3 className="text-2xl font-bold">Razem: ${calculateTotal()}</h3>
-          {checkoutStatus === 'processing' && (
-            <p className="text-yellow-400">Przetwarzanie płatności...</p>
-          )}
-          {checkoutStatus === 'success' && (
-            <p className="text-green-400">Płatność zakończona sukcesem! Zamówienie zostało złożone.</p>
-          )}
-          {checkoutStatus === 'error' && (
-            <p className="text-red-400">Błąd podczas przetwarzania płatności. Spróbuj ponownie.</p>
-          )}
-          <Button
-            onClick={handleCheckout}
-            disabled={checkoutStatus === 'processing'}
-            className="w-full mt-4 bg-primary text-black font-bold py-3 rounded-lg hover:bg-primary/90"
-          >
-            Złóż Zamówienie
-          </Button>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+      <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="text-left">Product</th>
+              <th className="text-left">Price</th>
+              <th className="text-left">Quantity</th>
+              <th className="text-left">Total</th>
+              <th className="text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cartItems.map((item) => (
+              <tr key={item.id} className="border-b">
+                <td className="py-2">{item.name}</td>
+                <td className="py-2">${item.price.toFixed(2)}</td>
+                <td className="py-2">
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) => handleUpdateQuantity(item.id, parseInt(e.target.value))}
+                    className="w-16 border rounded-md p-1"
+                  />
+                </td>
+                <td className="py-2">${(item.price * item.quantity).toFixed(2)}</td>
+                <td className="py-2">
+                  <button
+                    onClick={() => handleRemoveFromCart(item.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Total: ${calculateTotal()}</h2>
+        <button
+          onClick={handleCheckout}
+          className="bg-neon-pink text-white py-2 px-6 rounded-md hover:bg-neon-pink-dark transition-colors duration-200"
+        >
+          Checkout
+        </button>
+      </div>
+      <a href="/shop" className="inline-block text-neon-pink hover:underline">Continue Shopping</a>
     </div>
   );
 };
 
 export default Cart;
+

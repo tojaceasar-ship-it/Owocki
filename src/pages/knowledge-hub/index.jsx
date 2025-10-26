@@ -10,6 +10,7 @@ import CulturalTimelineCard from './components/CulturalTimelineCard';
 import CommunityTipCard from './components/CommunityTipCard';
 import SearchFilters from './components/SearchFilters';
 import { motion } from 'framer-motion';
+import { client } from '../../lib/sanity';
 
 const KnowledgeHub = () => {
   const [activeTab, setActiveTab] = useState('tutorials');
@@ -32,281 +33,25 @@ const KnowledgeHub = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data from CMS
     const fetchKnowledgeData = async () => {
       try {
         setLoading(true);
-        // Mock CMS data
-        const mockData = {
-          tutorials: [
-            {
-              id: 1,
-              title: "Street Style Layering with Watermelon Hoodie",
-              description: "Learn how to layer your Watermelon character hoodie with different pieces to create authentic street looks that rep your neighborhood with style.",
-              thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
-              duration: "8:45",
-              difficulty: "Beginner",
-              character: "Watermelon",
-              views: "12.5K",
-              publishedAt: "2 days ago",
-              category: "styling"
-            },
-            {
-              id: 2,
-              title: "Orange Character Denim Styling Guide",
-              description: "Master the art of styling Orange character denim pieces with urban accessories. From chains to caps, create looks that celebrate street culture authenticity.",
-              thumbnail: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop",
-              duration: "12:30",
-              difficulty: "Intermediate",
-              character: "Orange",
-              views: "8.9K",
-              publishedAt: "5 days ago",
-              category: "styling"
-            },
-            {
-              id: 3,
-              title: "Grape Luxury Streetwear Mixing",
-              description: "Discover how to mix Grape character luxury pieces with everyday streetwear to achieve that authentic street luxury aesthetic without losing cultural credibility.",
-              thumbnail: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=300&fit=crop",
-              duration: "15:20",
-              difficulty: "Advanced",
-              character: "Grape",
-              views: "15.2K",
-              publishedAt: "1 week ago",
-              category: "styling"
-            },
-            {
-              id: 4,
-              title: "Apple Character Seasonal Transitions",
-              description: "Learn how to transition your Apple character pieces through different seasons while maintaining that fresh street credibility and neighborhood pride.",
-              thumbnail: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=300&fit=crop",
-              duration: "10:15",
-              difficulty: "Beginner",
-              character: "Apple",
-              views: "6.7K",
-              publishedAt: "3 days ago",
-              category: "seasonal"
-            }
-          ],
-          materialGuides: [
-            {
-              id: 1,
-              title: "Premium Cotton Blend Guide",
-              materialType: "Cotton",
-              description: "Understanding our premium cotton blend used in character hoodies. Learn about sourcing, quality, and why this material represents authentic street luxury.",
-              image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=200&fit=crop",
-              sustainability: "Excellent",
-              careLevel: "Easy",
-              origin: "Organic Farms",
-              transparency: "Full supply chain visibility with ethical sourcing from certified organic cotton farms that support local communities."
-            },
-            {
-              id: 2,
-              title: "Street-Grade Denim Construction",
-              materialType: "Denim",
-              description: "Deep dive into our denim construction process. From raw material selection to final character embroidery, discover the craftsmanship behind authentic street style.",
-              image: "https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=400&h=200&fit=crop",
-              sustainability: "Good",
-              careLevel: "Moderate",
-              origin: "Heritage Mills",
-              transparency: "Traditional weaving techniques combined with modern sustainability practices for durable street-ready denim."
-            },
-            {
-              id: 3,
-              title: "Synthetic Performance Fabrics",
-              materialType: "Synthetic",
-              description: "Explore our high-performance synthetic materials used in active streetwear pieces. Designed for urban environments and street culture activities.",
-              image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop",
-              sustainability: "Fair",
-              careLevel: "Easy",
-              origin: "Tech Labs",
-              transparency: "Innovative synthetic blends designed for performance while maintaining authentic street aesthetic and cultural relevance."
-            }
-          ],
-          careInstructions: [
-            {
-              id: 1,
-              productType: "Character Hoodies",
-              material: "Premium Cotton Blend",
-              careTime: "45 minutes",
-              difficulty: "Easy",
-              frequency: "After 3-4 wears",
-              steps: [
-                {
-                  type: "wash",
-                  title: "Cold Water Wash",
-                  description: "Turn hoodie inside out and wash in cold water (30°C max) to preserve character graphics and fabric integrity.",
-                  warning: "Never use bleach or harsh detergents as they can fade character designs and damage premium cotton fibers."
-                },
-                {
-                  type: "dry",
-                  title: "Air Dry Method",
-                  description: "Lay flat or hang to air dry away from direct sunlight. This preserves the shape and prevents shrinkage of your street luxury piece.",
-                  warning: "Avoid tumble drying as high heat can damage character prints and cause unwanted shrinkage."
-                },
-                {
-                  type: "store",
-                  title: "Proper Storage",
-                  description: "Fold carefully or hang on padded hangers. Store in cool, dry place to maintain that fresh-from-the-hood appearance.",
-                  warning: null
-                }
-              ]
-            },
-            {
-              id: 2,
-              productType: "Character Denim",
-              material: "Street-Grade Denim",
-              careTime: "60 minutes",
-              difficulty: "Moderate",
-              frequency: "After 5-6 wears",
-              steps: [
-                {
-                  type: "wash",
-                  title: "Gentle Cycle Wash",
-                  description: "Wash inside out on gentle cycle with cold water. Use mild detergent to preserve the authentic denim texture and character embroidery.",
-                  warning: "Wash separately for first few washes to prevent color bleeding onto other garments."
-                },
-                {
-                  type: "dry",
-                  title: "Controlled Drying",
-                  description: "Air dry flat or hang dry. For faster drying, use low heat tumble dry for maximum 15 minutes then air dry completely.",
-                  warning: "High heat can cause excessive shrinkage and damage to character details."
-                },
-                {
-                  type: "iron",
-                  title: "Steam Pressing",
-                  description: "If needed, iron inside out on medium heat or use steamer. Avoid direct heat on character embroidery and patches.",
-                  warning: "Never iron directly over character graphics as heat can cause permanent damage."
-                }
-              ]
-            }
-          ],
-          culturalTimeline: [
-            {
-              id: 1,
-              year: "1970s",
-              title: "Birth of Hip-Hop Culture",
-              description: "The emergence of hip-hop culture in the Bronx, establishing the foundation for authentic street expression through music, art, and style.",
-              image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop",
-              category: "Music & Culture",
-              location: "Bronx, NY",
-              isInfluential: true,
-              relatedCharacters: ["Watermelon", "Orange"],
-              impact: "Established the cultural foundation that inspires our character universe and authentic street luxury aesthetic."
-            },
-            {
-              id: 2,
-              year: "1980s",
-              title: "Graffiti Art Movement",
-              description: "Street art and graffiti culture exploded, transforming urban walls into canvases for creative expression and neighborhood pride.",
-              image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-              category: "Visual Art",
-              location: "NYC Subway",
-              isInfluential: true,
-              relatedCharacters: ["Grape", "Apple"],
-              impact: "Inspired our spray-paint aesthetic and the visual language used in character design and brand identity."
-            },
-            {
-              id: 3,
-              year: "1990s",
-              title: "Streetwear Revolution",
-              description: "The birth of streetwear as a legitimate fashion category, blending street culture with premium quality and authentic urban aesthetics.",
-              image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop",
-              category: "Fashion",
-              location: "Global",
-              isInfluential: true,
-              relatedCharacters: ["Banana", "Strawberry"],
-              impact: "Defined the street luxury category that Fruits From Da Hood represents - premium quality with genuine street credibility."
-            },
-            {
-              id: 4,
-              year: "2000s",
-              title: "Digital Street Culture",
-              description: "Street culture embraced digital platforms, creating new ways for communities to connect, share, and celebrate authentic urban creativity.",
-              image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=200&fit=crop",
-              category: "Digital Culture",
-              location: "Online Communities",
-              isInfluential: false,
-              relatedCharacters: ["Pineapple"],
-              impact: "Influenced our community-driven approach and digital-first brand experience that connects street culture globally."
-            }
-          ],
-          communityTips: [
-            {
-              id: 1,
-              title: "Mixing Character Pieces Like a Pro",
-              content: "Don't be afraid to mix different character pieces in one outfit! I rock my Watermelon hoodie with Grape denim and it creates this dope contrast that shows respect for the whole crew. The key is balancing colors and letting each character's personality shine through without competing.",
-              category: "Styling",
-              difficulty: "Intermediate",
-              author: {
-                name: "StreetStyle_Maya",
-                avatar: "https://randomuser.me/api/portraits/women/32.jpg",
-                level: "Hood Legend",
-                verification: "expert"
-              },
-              timeAgo: "2 hours ago",
-              likes: 127,
-              shares: 23,
-              comments: 18,
-              isLiked: false,
-              tags: ["mixing", "characters", "styling", "balance"],
-              images: [
-                "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=300&h=200&fit=crop",
-                "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop"
-              ]
-            },
-            {
-              id: 2,
-              title: "Keeping Your Hoodies Fresh Longer",
-              content: "Real talk - I've been wearing my character hoodies for 2 years and they still look brand new. The secret is washing inside out in cold water and air drying. Never use fabric softener on the character graphics, it can make them crack over time. Also, rotate between pieces so you're not wearing the same one every day.",
-              category: "Care",
-              difficulty: "Beginner",
-              author: {
-                name: "FreshFit_Carlos",
-                avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-                level: "Street Veteran",
-                verification: "verified"
-              },
-              timeAgo: "1 day ago",
-              likes: 89,
-              shares: 34,
-              comments: 12,
-              isLiked: true,
-              tags: ["care", "maintenance", "longevity", "hoodies"],
-              images: []
-            },
-            {
-              id: 3,
-              title: "Cultural Respect in Street Fashion",
-              content: "When you wear Fruits From Da Hood, you're representing more than just a brand - you're carrying the culture. Learn the history behind the designs, understand what each character represents, and wear them with pride but also respect. Street fashion is about community, not just looking fly.",
-              category: "Culture",
-              difficulty: "Beginner",
-              author: {
-                name: "CultureKeeper_Zoe",
-                avatar: "https://randomuser.me/api/portraits/women/28.jpg",
-                level: "Community Elder",
-                verification: "community"
-              },
-              timeAgo: "3 days ago",
-              likes: 156,
-              shares: 67,
-              comments: 29,
-              isLiked: false,
-              tags: ["culture", "respect", "community", "history"],
-              images: [
-                "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop"
-              ]
-            }
-          ]
-        };
-        setKnowledgeData(mockData);
+        const data = await client.fetch('*[_type == "knowledgeHubContent"]');
+        if (data.length > 0) {
+          setKnowledgeData({
+            tutorials: data[0].tutorials || [],
+            materialGuides: data[0].materialGuides || [],
+            careInstructions: data[0].careInstructions || [],
+            culturalTimeline: data[0].culturalTimeline || [],
+            communityTips: data[0].communityTips || []
+          });
+        }
       } catch (error) {
-        console.error('Error fetching knowledge data:', error);
+        console.error('Error fetching knowledge data from Sanity:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchKnowledgeData();
   }, []);
 

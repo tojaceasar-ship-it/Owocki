@@ -11,6 +11,7 @@ import PersonalizedRecommendations from './components/PersonalizedRecommendation
 import CommunityParticipation from './components/CommunityParticipation';
 import DigitalCollection from './components/DigitalCollection';
 import Button from '../../components/ui/Button';
+import { client } from '../../lib/sanity';
 
 
 const PersonalDashboard = () => {
@@ -37,409 +38,36 @@ const PersonalDashboard = () => {
   const [currentStreak, setCurrentStreak] = useState(0);
 
   useEffect(() => {
-    // Simulate fetching data from CMS
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // Mock CMS data
-        const mockData = {
-          userProfile: {
-            name: "Marcus Rivera",
-            title: "Street Style Creator",
-            level: 7,
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-            achievements: 23,
-            wishlistItems: 12,
-            contributions: 45,
-            communityRank: "Hood Legend"
-          },
-          personalityData: {
-            type: "Creative Innovator",
-            description: "You blend artistic vision with street authenticity, always pushing boundaries while staying true to your roots.",
-            traits: ["Creative", "Authentic", "Trendsetter", "Community-minded"],
-            character: {
-              name: "Mango Mike",
-              image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=150&h=150&fit=crop"
-            }
-          },
-          preferredCharacters: [
-            {
-              id: 1,
-              name: "Watermelon Wayne",
-              image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
-              compatibility: 95
-            },
-            {
-              id: 2,
-              name: "Apple Annie",
-              image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=100&h=100&fit=crop",
-              compatibility: 87
-            },
-            {
-              id: 3,
-              name: "Grape Gary",
-              image: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=100&h=100&fit=crop",
-              compatibility: 82
-            }
-          ],
-          wishlistItems: [
-            {
-              id: 1,
-              name: "Hood Classic Hoodie",
-              price: 89.99,
-              image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=300&fit=crop",
-              addedDate: "2 days ago",
-              character: {
-                name: "Watermelon Wayne",
-                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=50&h=50&fit=crop"
-              }
-            },
-            {
-              id: 2,
-              name: "Street Gold Chain",
-              price: 129.99,
-              image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=300&fit=crop",
-              addedDate: "5 days ago",
-              character: {
-                name: "Mango Mike",
-                image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=50&h=50&fit=crop"
-              }
-            },
-            {
-              id: 3,
-              name: "Urban Kicks",
-              price: 159.99,
-              image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=300&fit=crop",
-              addedDate: "1 week ago",
-              character: {
-                name: "Apple Annie",
-                image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=50&h=50&fit=crop"
-              }
-            }
-          ],
-          achievements: [
-            {
-              id: 1,
-              name: "First Steps",
-              type: "community",
-              rarity: "common",
-              unlocked: true
-            },
-            {
-              id: 2,
-              name: "Style Master",
-              type: "style",
-              rarity: "epic",
-              unlocked: true
-            },
-            {
-              id: 3,
-              name: "Community Hero",
-              type: "community",
-              rarity: "legendary",
-              unlocked: true
-            },
-            {
-              id: 4,
-              name: "Quiz Champion",
-              type: "quiz",
-              rarity: "rare",
-              unlocked: true
-            },
-            {
-              id: 5,
-              name: "Collector",
-              type: "collector",
-              rarity: "epic",
-              unlocked: false
-            },
-            {
-              id: 6,
-              name: "Creator",
-              type: "creator",
-              rarity: "legendary",
-              unlocked: false
-            }
-          ],
-          recentAchievements: [
-            {
-              id: 1,
-              name: "15-Day Streak",
-              description: "Visited the platform for 15 consecutive days",
-              type: "streak",
-              unlockedDate: "Today"
-            },
-            {
-              id: 2,
-              name: "Style Influencer",
-              description: "Your style post got 50+ likes",
-              type: "social",
-              unlockedDate: "2 days ago"
-            }
-          ],
-          progressStats: [
-            {
-              id: 1,
-              name: "Community",
-              progress: 75,
-              current: 15,
-              total: 20
-            },
-            {
-              id: 2,
-              name: "Style",
-              progress: 60,
-              current: 12,
-              total: 20
-            },
-            {
-              id: 3,
-              name: "Collector",
-              progress: 40,
-              current: 8,
-              total: 20
-            },
-            {
-              id: 4,
-              name: "Creator",
-              progress: 25,
-              current: 5,
-              total: 20
-            }
-          ],
-          activities: [
-            {
-              id: 1,
-              type: "achievement",
-              category: "achievements",
-              description: "Unlocked '15-Day Streak' achievement",
-              timestamp: "2 hours ago",
-              points: 50,
-              metadata: {
-                achievement: "15-Day Streak"
-              }
-            },
-            {
-              id: 2,
-              type: "wishlist_add",
-              category: "wishlist",
-              description: "Added 'Hood Classic Hoodie' to wishlist",
-              timestamp: "1 day ago",
-              image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100&h=100&fit=crop",
-              metadata: {
-                character: {
-                  name: "Watermelon Wayne",
-                  image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=50&h=50&fit=crop"
-                }
-              }
-            },
-            {
-              id: 3,
-              type: "community_post",
-              category: "community",
-              description: "Shared your street style look",
-              timestamp: "2 days ago",
-              points: 25,
-              image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
-            },
-            {
-              id: 4,
-              type: "quiz_complete",
-              category: "quiz",
-              description: "Completed 'Which Fruit Are You?' personality quiz",
-              timestamp: "3 days ago",
-              points: 30
-            }
-          ],
-          recommendations: {
-            characters: [
-              {
-                id: 1,
-                name: "Banana Bob",
-                description: "The smooth operator with golden style and laid-back vibes",
-                image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=150&h=150&fit=crop",
-                reason: "personality_match",
-                matchPercentage: 89
-              },
-              {
-                id: 2,
-                name: "Cherry Charlotte",
-                description: "Sweet but fierce, bringing bold energy to every look",
-                image: "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=150&h=150&fit=crop",
-                reason: "style_history",
-                matchPercentage: 76
-              }
-            ],
-            products: [
-              {
-                id: 1,
-                name: "Graffiti Bomber Jacket",
-                description: "Hand-painted street art design with premium materials",
-                image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=150&h=150&fit=crop",
-                price: 199.99,
-                originalPrice: 249.99,
-                reason: "character_preference",
-                matchPercentage: 92
-              },
-              {
-                id: 2,
-                name: "Neon Snapback",
-                description: "Electric colors that glow under street lights",
-                image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=150&h=150&fit=crop",
-                price: 49.99,
-                reason: "wishlist_similar",
-                matchPercentage: 84
-              }
-            ],
-            content: [
-              {
-                id: 1,
-                name: "Street Photography Guide",
-                description: "Master the art of urban photography with pro tips",
-                image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=150&h=150&fit=crop",
-                reason: "community_trending"
-              }
-            ],
-            community: [
-              {
-                id: 1,
-                name: "Weekly Style Challenge",
-                description: "Show off your best street look this week",
-                image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=150&h=150&fit=crop",
-                reason: "achievement_unlock"
-              }
-            ]
-          },
-          participationData: {
-            level: 7,
-            role: "Hood Legend",
-            currentXP: 2850,
-            nextLevelXP: 3500
-          },
-          communityStats: [
-            {
-              id: 1,
-              icon: "Camera",
-              label: "Style Posts",
-              value: "23",
-              gradient: "from-primary to-secondary"
-            },
-            {
-              id: 2,
-              icon: "Heart",
-              label: "Likes Given",
-              value: "156",
-              gradient: "from-accent to-primary"
-            },
-            {
-              id: 3,
-              icon: "MessageSquare",
-              label: "Comments",
-              value: "89",
-              gradient: "from-secondary to-accent"
-            },
-            {
-              id: 4,
-              icon: "Users",
-              label: "Followers",
-              value: "342",
-              gradient: "from-primary to-accent"
-            }
-          ],
-          recentContributions: [
-            {
-              id: 1,
-              type: "style_photo",
-              title: "Street style with Watermelon Wayne hoodie",
-              category: "Style",
-              date: "2 days ago",
-              likes: 47,
-              xpEarned: 25,
-              image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
-            },
-            {
-              id: 2,
-              type: "poll_vote",
-              title: "Voted on next character design",
-              category: "Community",
-              date: "4 days ago",
-              xpEarned: 10
-            },
-            {
-              id: 3,
-              type: "design_input",
-              title: "Suggested color scheme for Apple Annie",
-              category: "Creator Lab",
-              date: "1 week ago",
-              xpEarned: 30
-            }
-          ],
-          tradingCards: [
-            {
-              id: 1,
-              name: "Watermelon Wayne - Origin",
-              rarity: "legendary",
-              series: "Genesis",
-              image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=300&fit=crop",
-              unlockDate: "Jan 15, 2025",
-              isNew: true,
-              shareable: true
-            },
-            {
-              id: 2,
-              name: "Mango Mike - Street Artist",
-              rarity: "epic",
-              series: "Creators",
-              image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=300&fit=crop",
-              unlockDate: "Jan 10, 2025",
-              isNew: false,
-              shareable: true
-            },
-            {
-              id: 3,
-              name: "Apple Annie - Rebel",
-              rarity: "rare",
-              series: "Attitude",
-              image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=300&fit=crop",
-              unlockDate: "Dec 28, 2024",
-              isNew: false,
-              shareable: true
-            }
-          ],
-          seasonalContent: [
-            {
-              id: 1,
-              name: "Winter Street Collection",
-              rarity: "epic",
-              series: "Season 1",
-              image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=300&fit=crop",
-              unlockDate: "Dec 1, 2024",
-              isNew: false,
-              shareable: true
-            }
-          ],
-          exclusiveUnlocks: [
-            {
-              id: 1,
-              name: "Founder's Badge",
-              rarity: "legendary",
-              series: "Exclusive",
-              image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=300&fit=crop",
-              unlockDate: "Launch Day",
-              isNew: false,
-              shareable: false
-            }
-          ]
-        };
-        setDashboardData(mockData);
-        setCurrentStreak(15);
+        const data = await client.fetch('*[_type == "personalDashboardContent"]');
+        if (data.length > 0) {
+          setDashboardData({
+            userProfile: data[0].userProfile || {},
+            personalityData: data[0].personalityData || {},
+            preferredCharacters: data[0].preferredCharacters || [],
+            wishlistItems: data[0].wishlistItems || [],
+            achievements: data[0].achievements || [],
+            recentAchievements: data[0].recentAchievements || [],
+            progressStats: data[0].progressStats || [],
+            activities: data[0].activities || [],
+            recommendations: data[0].recommendations || {},
+            participationData: data[0].participationData || {},
+            communityStats: data[0].communityStats || [],
+            recentContributions: data[0].recentContributions || [],
+            tradingCards: data[0].tradingCards || [],
+            seasonalContent: data[0].seasonalContent || [],
+            exclusiveUnlocks: data[0].exclusiveUnlocks || []
+          });
+          setCurrentStreak(data[0].currentStreak || 0);
+        }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error fetching dashboard data from Sanity:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
   }, []);
 

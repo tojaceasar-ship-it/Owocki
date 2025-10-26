@@ -3,7 +3,7 @@
   "name": "fruits-from-da-hood",
   "builds": [
     {
-      "src": "package.json",
+      "src": "vite.config.mjs",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -12,10 +12,22 @@
   ],
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/"
     }
   ],
+  "images": {
+    "sizes": [64, 128, 256, 512],
+    "domains": ["fruitsfromdahood.pl"],
+    "minimumCacheTTL": 60,
+    "formats": ["image/avif", "image/webp"]
+  },
   "headers": [
     {
       "source": "/assets/(.*)",
